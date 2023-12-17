@@ -5,6 +5,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import torch.optim
 import model
+import os
 
 # データのダウンロードとデータセットの作成
 train_dataset = datasets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download = True)
@@ -14,28 +15,31 @@ train_dataloader = torch.utils.data.DataLoader(dataset = train_dataset, batch_si
 test_dataloader = torch.utils.data.DataLoader(dataset = test_dataset, batch_size = batch_size, shuffle = False)
 
 # トレーニング
-model = model.Model()
-
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr = 0.001)
-
 def train_step(x, t):
-	model.train()
-	x = (x * 255).round() # 入力の量子化
-	output = model(x)
+	model1.train()
+	output = model1(x)
 	loss = criterion(output, t)
 	optimizer.zero_grad()
 	loss.backward()
 	optimizer.step()
 	return loss
 
-epochs = 5
+model1 = model.Model()
+if os.path.exists("weight.pth"):
+	model1.load_state_dict(torch.load("weight.pth"))
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model1.parameters(), lr = 0.1)
+
+epochs = 10
 for e in range(epochs):
 	total_loss = 0
 	for (x, t) in train_dataloader:
 		loss = train_step(x, t)
 		total_loss += loss
-	print(e, ":", total_loss)
+	print("epoch :", e, ", total loss :", total_loss)
 
 # パラメータの保存
-torch.save(model.state_dict(), "weight.pth")
+weights = model1.state_dict()
+torch.save(weights, "weight.pth")
+
