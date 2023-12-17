@@ -14,7 +14,7 @@ train_dataloader = torch.utils.data.DataLoader(dataset = train_dataset, batch_si
 test_dataloader = torch.utils.data.DataLoader(dataset = test_dataset, batch_size = batch_size, shuffle = False)
 
 # トレーニング
-model = model.model()
+model = model.Model()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.001)
