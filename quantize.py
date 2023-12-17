@@ -22,10 +22,8 @@ s0 = 1 / 255
 z0 = 0
 
 # fc1 の重みの量子化パラメータ
-w1 = weights["fc1.weight"].clone()
-wmax = w1.max()
-wmin = w1.min()
-s1 = max(wmax, -wmin) * 2 / 255
+w1 = model1.fc1.weight.data
+s1 = max(w1.max() / 127, w1.min() / 128 * (-1))
 z1 = 0
 quantized_w1 = (w1 / s1).round()
 
@@ -50,10 +48,8 @@ while M >= 2:
 	shiftM += 1
 
 # fc2 の重みの量子化パラメータ
-w2 = weights["fc2.weight"].clone()
-wmax = w2.max()
-wmin = w2.min()
-s2 = max(wmax, -wmin) * 2 / 255
+w2 = model1.fc2.weight.data
+s2 = max(w2.max() / 127, w2.min() / 128 * (-1))
 z2 = 0
 quantized_w2 = (w2 / s2).round()
 
