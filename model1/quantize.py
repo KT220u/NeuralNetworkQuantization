@@ -7,8 +7,8 @@ import torch.optim
 import model
 import sys
 
-train_dataset = datasets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download = True)
-test_dataset = datasets.MNIST(root='./data', train=False, transform=transforms.ToTensor(), download = True)
+train_dataset = datasets.MNIST(root='../data', train=True, transform=transforms.ToTensor(), download = True)
+test_dataset = datasets.MNIST(root='../data', train=False, transform=transforms.ToTensor(), download = True)
 batch_size = 64
 train_dataloader = torch.utils.data.DataLoader(dataset = train_dataset, batch_size = batch_size, shuffle = True)
 test_dataloader = torch.utils.data.DataLoader(dataset = test_dataset, batch_size = batch_size, shuffle = False)
@@ -23,7 +23,7 @@ z0 = 0
 
 # fc1 の重みの量子化パラメータ
 w1 = model1.fc1.weight.data
-s1 = max(w1.max() / 127, w1.min() / 128 * (-1))
+s1 = max(w1.max(), w1.min() * -1) / 127
 z1 = 0
 quantized_w1 = (w1 / s1).round()
 
@@ -49,7 +49,7 @@ while M >= 2:
 
 # fc2 の重みの量子化パラメータ
 w2 = model1.fc2.weight.data
-s2 = max(w2.max() / 127, w2.min() / 128 * (-1))
+s2 = max(w2.max() , w2.min() * -1) / 127
 z2 = 0
 quantized_w2 = (w2 / s2).round()
 

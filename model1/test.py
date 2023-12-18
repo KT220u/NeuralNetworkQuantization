@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import model
 import sys
 
-test_dataset = torchvision.datasets.MNIST(root='./data', train=False, transform=transforms.ToTensor(), download = True)
+test_dataset = torchvision.datasets.MNIST(root='../data', train=False, transform=transforms.ToTensor(), download = True)
 batch_size = 64
 test_dataloader = torch.utils.data.DataLoader(dataset = test_dataset, batch_size = batch_size, shuffle = False)
 

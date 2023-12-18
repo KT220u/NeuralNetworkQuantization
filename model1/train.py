@@ -8,8 +8,8 @@ import model
 import os
 
 # データのダウンロードとデータセットの作成
-train_dataset = datasets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download = True)
-test_dataset = datasets.MNIST(root='./data', train=False, transform=transforms.ToTensor(), download = True)
+train_dataset = datasets.MNIST(root='../data', train=True, transform=transforms.ToTensor(), download = True)
+test_dataset = datasets.MNIST(root='../data', train=False, transform=transforms.ToTensor(), download = True)
 batch_size = 64
 train_dataloader = torch.utils.data.DataLoader(dataset = train_dataset, batch_size = batch_size, shuffle = True)
 test_dataloader = torch.utils.data.DataLoader(dataset = test_dataset, batch_size = batch_size, shuffle = False)
