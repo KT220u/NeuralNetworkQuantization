@@ -74,7 +74,6 @@ for (x, t) in test_dataloader:
 	total += output.shape[0]
 print("correct rate :", (correct / total).item())
 
-'''
 # 各層の出力の確認
 for (x, t) in test_dataloader:
 	x = (x / s0).round()
@@ -88,4 +87,3 @@ for (x, t) in test_dataloader:
 	x = qmodel.fc2(x)
 	print(x[0])
 	break
-'''
