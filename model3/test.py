@@ -22,4 +22,3 @@ for (x, t) in test_dataloader:
 	total += output.shape[0]
 	correct += (predicted == t).sum()
 print("correct rate : ", (correct / total).item())
-
