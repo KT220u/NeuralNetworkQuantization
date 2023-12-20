@@ -23,6 +23,10 @@ $ python3 quantize.py
 + relu3
 + fc2 ; 出力
 
+### model3
++ model2 の conv 層の出力に BatchNormalization を追加
++ BatchNormalizationFolding
+
 ### 量子化
 + 重みは signed + symmetry
 + 入力、活性値は unsigned
