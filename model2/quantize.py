@@ -57,7 +57,7 @@ quantized_w_conv1 = (weights / s_conv1).round()
 s_relu1 =  relu1_max / 255
 M = s_relu1 / s_input / s_conv1
 shiftM1 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM1 += 1
 
@@ -71,7 +71,7 @@ quantized_w_conv2 = (weights / s_conv2).round()
 s_relu2 = relu2_max / 255
 M = s_relu2 / s_relu1 / s_conv2
 shiftM2 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM2 += 1
 
@@ -85,7 +85,7 @@ quantized_w_fc1 = (weights / s_fc1).round()
 s_relu3 =  relu3_max / 255
 M = s_relu3 / s_relu2 / s_fc1
 shiftM3 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM3 += 1
 
@@ -127,15 +127,18 @@ print("correct rate : ", (correct / total).item())
 x = qmodel.conv1(x)
 x = torch.relu(x)
 x = (x.int() >> qmodel.shiftM1).float()
+print(x.max())
 x = qmodel.maxpool1(x)
 x = qmodel.conv2(x)
 x = torch.relu(x)
 x = (x.int() >> qmodel.shiftM2).float()
+print(x.max())
 x = qmodel.maxpool2(x)
 x = x.reshape(-1, 32*4*4)
 x = qmodel.fc1(x)
 x = torch.relu(x)
 x = (x.int() >> qmodel.shiftM3).float()
+print(x.max())
 print(x[0])
 x = qmodel.fc2(x)
 '''
