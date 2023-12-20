@@ -28,7 +28,7 @@ class Model(nn.Module):
 		x = self.fc2(x)
 		return x
 
-class FOldedModel(Model):
+class FoldedModel(Model):
 	def __init__(self):
 		super().__init__()
 	def forward(self, x):
@@ -42,6 +42,7 @@ class FOldedModel(Model):
 		x = self.fc1(x)
 		x = torch.relu(x)
 		x = self.fc2(x)
+		return x
 
 class QuantizedModel(Model):
 	def __init__(self, shiftM1, shiftM2, shiftM3):
