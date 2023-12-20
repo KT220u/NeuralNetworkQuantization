@@ -28,11 +28,13 @@ relu3_min = 0
 
 for (x, t) in train_dataloader:
 	x = model1.conv1(x)
+	x = model1.bn1(x)
 	x = torch.relu(x)
 	if relu1_max < x.max():
 		relu1_max = x.max()
 	x = model1.maxpool1(x)
 	x = model1.conv2(x)
+	x = model1.bn2(x)
 	x = torch.relu(x)
 	if relu2_max < x.max():
 		relu2_max = x.max()
@@ -66,6 +68,8 @@ s_conv1 = max(w_folded.max(), w_folded.min() * -1) / 127
 quantized_w_conv1 = (w_folded / s_conv1).round()
 quantized_b_conv1 = (b_folded / s_conv1 / s_input).round()
 
+print(quantized_w_conv1[0])
+print(quantized_b_conv1)
 # conv1 + relu の活性値の量子化パラメータ
 s_relu1 =  relu1_max / 255
 M = s_relu1 / s_input / s_conv1

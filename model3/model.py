@@ -28,6 +28,21 @@ class Model(nn.Module):
 		x = self.fc2(x)
 		return x
 
+class FOldedModel(Model):
+	def __init__(self):
+		super().__init__()
+	def forward(self, x):
+		x = self.conv1(x)
+		x = torch.relu(x)
+		x = self.maxpool1(x)
+		x = self.conv2(x)
+		x = torch.relu(x)
+		x = self.maxpool2(x)
+		x = x.reshape(-1, 32*4*4)
+		x = self.fc1(x)
+		x = torch.relu(x)
+		x = self.fc2(x)
+
 class QuantizedModel(Model):
 	def __init__(self, shiftM1, shiftM2, shiftM3):
 		super().__init__()
