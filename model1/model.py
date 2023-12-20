@@ -24,6 +24,7 @@ class QuantizedModel(Model):
 		x = torch.relu(x)
 		# 再量子化
 		x = (x.int() >> self.shiftM).float()
+		x = x.clip(0, 255)
 		x = self.fc2(x)
 		return x
 

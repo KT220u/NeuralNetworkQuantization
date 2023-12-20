@@ -43,7 +43,7 @@ sa = amax / 255
 # sa / s0 / s1 で割るようにする。そして、これをシフト演算で置き換える
 M = sa / s1 / s0
 shiftM = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM += 1
 
@@ -79,11 +79,7 @@ for (x, t) in test_dataloader:
 	x = (x / s0).round()
 	x = x.reshape(-1, 784)
 	x = qmodel.fc1(x)
-	print(x[0])
 	x = torch.relu(x)
-	print(x[0])
 	x = (x.int() >> shiftM).float()
-	print(x[0])
 	x = qmodel.fc2(x)
-	print(x[0])
 	break
