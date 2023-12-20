@@ -54,15 +54,18 @@ class QuantizedModel(Model):
 		x = self.conv1(x)
 		x = torch.relu(x)
 		x = (x.int() >> self.shiftM1).float()
+		x = x.clip(0, 255)
 		x = self.maxpool1(x)
 		x = self.conv2(x)
 		x = torch.relu(x)
 		x = (x.int() >> self.shiftM2).float()
+		x = x.clip(0, 255)
 		x = self.maxpool2(x)
 		x = x.reshape(-1, 32*4*4)
 		x = self.fc1(x)
 		x = torch.relu(x)
 		x = (x.int() >> self.shiftM3).float()
+		x = x.clip(0, 255)
 		x = self.fc2(x)
 		return x
 

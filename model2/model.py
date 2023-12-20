@@ -5,8 +5,8 @@ import torch.nn as nn
 class Model(nn.Module):
 	def __init__(self):
 		super().__init__()
-		self.fc1 = nn.Linear(32*4*4, 1024, bias = False)
-		self.fc2 = nn.Linear(1024, 10, bias = False)
+		self.fc1 = nn.Linear(32*4*4, 1024, bias = True)
+		self.fc2 = nn.Linear(1024, 10, bias = True)
 		self.conv1 = nn.Conv2d(1, 16, kernel_size = 5, padding = 0)
 		self.maxpool1 = nn.MaxPool2d(2, stride = 2)
 		self.conv2 = nn.Conv2d(16, 32, kernel_size = 5, padding = 0)

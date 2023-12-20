@@ -54,6 +54,9 @@ fmodel.fc1.bias.data = model1.fc1.bias.data
 fmodel.fc2.weight.data = model1.fc2.weight.data
 fmodel.fc2.bias.data = model1.fc2.bias.data
 
+#　パラメータの保存
+torch.save(fmodel.state_dict(), "folded_weight.pth")
+
 ### fmodel を量子化
 
 # 各relu の活性値の情報
@@ -91,7 +94,7 @@ weights = fmodel.conv1.weight.data
 bias = fmodel.conv1.bias.data
 z_conv1 = 0
 
-s_conv1 = max(weights.max(),weights.min() * -1) / 127
+s_conv1 = max(weights.max(), -1*weights.min()) / 127
 quantized_w_conv1 = (weights / s_conv1).round()
 quantized_b_conv1 = (bias / s_conv1 / s_input).round()
 
@@ -99,7 +102,7 @@ quantized_b_conv1 = (bias / s_conv1 / s_input).round()
 s_relu1 =  relu1_max / 255
 M = s_relu1 / s_input / s_conv1
 shiftM1 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM1 += 1
 
@@ -110,13 +113,13 @@ z_conv2 = 0
 
 s_conv2 = max(weights .max(), weights .min() * -1) / 127
 quantized_w_conv2 = (weights / s_conv2).round()
-quantized_b_conv2 = (bias / s_conv2 / s_input).round()
+quantized_b_conv2 = (bias / s_conv2 / s_relu1).round()
 
 # conv2 + relu の活性値の量子化パラメータ
 s_relu2 = relu2_max / 255
 M = s_relu2 / s_relu1 / s_conv2
 shiftM2 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM2 += 1
 
@@ -132,7 +135,7 @@ quantized_b_fc1 = (bias / s_fc1 / s_relu2).round()
 s_relu3 =  relu3_max / 255
 M = s_relu3 / s_relu2 / s_fc1
 shiftM3 = 0
-while M >= 2:
+while M > 1:
 	M /= 2
 	shiftM3 += 1
 
@@ -143,6 +146,14 @@ s_fc2 = max(weights.max() , weights.min() * -1) / 127
 z_fc2 = 0
 quantized_w_fc2 = (weights / s_fc2).round()
 quantized_b_fc2 = (bias / s_fc2 / s_relu3).round()
+
+print("s_conv1 :", s_conv1)
+print("s_conv2 :", s_conv2)
+print("s_fc1 :", s_fc1)
+print("s_fc2 :", s_fc2)
+print("shiftM1 :", shiftM1)
+print("shiftM2 :", shiftM2)
+print("shiftM3 :", shiftM3)
 
 # 量子化モデルの作成
 qmodel = model.QuantizedModel(shiftM1, shiftM2, shiftM3)
@@ -167,3 +178,21 @@ for (x, t) in test_dataloader:
 	correct += (predicted == t).sum()
 
 print("correct rate : ", (correct / total).item())
+
+# 出力結果の確認
+for (x, t) in test_dataloader:
+	x = (x * 255).round()
+	x = qmodel.conv1(x)
+	x = torch.relu(x)
+	x = (x.int() >> qmodel.shiftM1).float()
+	x = qmodel.maxpool1(x)
+	x = qmodel.conv2(x)
+	x = torch.relu(x)
+	x = (x.int() >> qmodel.shiftM2).float()
+	x = qmodel.maxpool2(x)
+	x = x.reshape(-1, 32*4*4)
+	x = qmodel.fc1(x)
+	x = torch.relu(x)
+	x = (x.int() >> qmodel.shiftM3).float()
+	x = qmodel.fc2(x)
+	break
