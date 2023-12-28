@@ -5,14 +5,14 @@ import torch.nn as nn
 class Model(nn.Module):
 	def __init__(self):
 		super().__init__()
-		inputfeatures = 3
-		self.conv1 = nn.Conv2d(input_features, 16, kernel_size = 5, padding = 0)
+		input_features = 3
+		self.conv1 = nn.Conv2d(input_features, 16, kernel_size = 5, padding = 2)
 		self.bn1 = nn.BatchNorm2d(16)
 		self.maxpool1 = nn.MaxPool2d(2, stride = 2)
-		self.conv2 = nn.Conv2d(16, 32, kernel_size = 5, padding = 0)
+		self.conv2 = nn.Conv2d(16, 32, kernel_size = 5, padding = 2)
 		self.bn2 = nn.BatchNorm2d(32)
 		self.maxpool2 = nn.MaxPool2d(2, stride = 2)
-		self.fc1 = nn.Linear(32*4*4, 1024, bias = True)
+		self.fc1 = nn.Linear(32*8*8, 1024, bias = True)
 		self.fc2 = nn.Linear(1024, 10, bias = True)
 	def forward(self, x):
 		x = self.conv1(x)
@@ -23,7 +23,7 @@ class Model(nn.Module):
 		x = self.bn2(x)
 		x = torch.relu(x)
 		x = self.maxpool2(x)
-		x = x.reshape(-1, 32*4*4)
+		x = x.reshape(-1, 32*8*8)
 		x = self.fc1(x)
 		x = torch.relu(x)
 		x = self.fc2(x)
@@ -39,7 +39,7 @@ class FoldedModel(Model):
 		x = self.conv2(x)
 		x = torch.relu(x)
 		x = self.maxpool2(x)
-		x = x.reshape(-1, 32*4*4)
+		x = x.reshape(-1, 32*8*8)
 		x = self.fc1(x)
 		x = torch.relu(x)
 		x = self.fc2(x)
@@ -62,7 +62,7 @@ class QuantizedModel(Model):
 		x = (x.int() >> self.shiftM2).float()
 		x = x.clip(0, 255)
 		x = self.maxpool2(x)
-		x = x.reshape(-1, 32*4*4)
+		x = x.reshape(-1, 32*8*8)
 		x = self.fc1(x)
 		x = torch.relu(x)
 		x = (x.int() >> self.shiftM3).float()
